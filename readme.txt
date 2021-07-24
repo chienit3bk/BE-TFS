@@ -1,0 +1,1 @@
+sửa lại chỗ kết nối với database: thay đổi tài khoản mà mật khẩu của mysql

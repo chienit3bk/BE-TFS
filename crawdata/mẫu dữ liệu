@@ -1,0 +1,23 @@
+	// ID          int64    `json:"id"`
+	// Name        string   `json:"name"`
+	// Series      string   `json:"series"`
+	// Label       string   `json:"label"`
+	// Img         string   `json:"img"`
+	// Description []string `json:"description"`
+	// Sizes       []string `json:"sizes"`
+	// Prices      []string `json:"prices"`
+{
+    41 
+    TV LED R30ETV LED R30E    
+    [
+        Nghe chi tiết hơn với Clear Resolution Enhancer Âm thanh trong trẻo, 
+        chân thực với Clear Phase Phát nội dung đa phương tiện qua USB hỗ trợ nhiều định dạng Nghe chi tiết hơn với Clear Resolution Enhancer Âm thanh trong trẻo, 
+        chân thực với Clear Phase Phát nội dung đa phương tiện qua USB hỗ trợ nhiều định dạng
+    ]
+    [
+        32” (80 cm)
+    ] 
+    [
+        5,290,000 VNĐ
+    ]
+}

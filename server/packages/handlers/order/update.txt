@@ -1,0 +1,40 @@
+package order
+
+import (
+	"encoding/json"
+	"net/http"
+	"project/database"
+	"project/packages/handlers/response"
+)
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	//read body with Claim: Content-Type: application/json
+	var updateOrder database.Order
+	err := json.NewDecoder(r.Body).Decode(&updateOrder)
+	if err != nil {
+		response.ResponseWithJson(w, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
+		return
+	}
+
+	//connect database
+	db := *database.ConnectToDatabase()
+
+	//find by ID (Primary key)
+	var order database.Order
+	db.First(&order, updateOrder.ID)
+
+	//check
+	if order.ID == 0 {
+		// fmt.Println("There is no such order !")
+		response.ResponseWithJson(w, http.StatusBadRequest, map[string]string{"message": "There is no such order !"})
+		return
+	}
+
+	//update and save
+	order = updateOrder
+	db.Save(&order)
+
+	//reponse
+	response.ResponseWithJson(w, http.StatusOK, map[string]string{"message": "Order Updated !"})
+
+}

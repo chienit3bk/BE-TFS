@@ -1,0 +1,1 @@
+Xem các file config ở mục tương ứng để kết nối elasticsearch, redis, rabbitMQ và sendgrid

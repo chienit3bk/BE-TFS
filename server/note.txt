@@ -1,0 +1,5 @@
+1. connect db ở update là khác với đọc , thêm , xóa : update sử dụng dấu *
+2. Có hai cách viết middleware một cách viết dùng để gọi trong router.Use() một loại dc gọi trong HandleFunc()
+    vd1:    adminSubRouter.Use(middleware.AAdminAuthorize)   //middleware được sử dụng trong project
+    vd2: 	router.Methods(http.MethodDelete).Path("/products/{id:[0-9]+}").HandlerFunc(middleware.AdminAuthorize(product.Delete))  //middleware đang bị cmt ở phần middleware
+

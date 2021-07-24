@@ -1,0 +1,2 @@
+- remote caching 
+- trong project thì công nghệ này chỉ áp dụng nhằm mục đích lưu code verify.
