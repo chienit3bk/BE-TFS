@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"project/database"
 	"project/packages/handlers/response"
+	"strings"
 	"time"
 )
 
@@ -18,14 +19,18 @@ type StatisticData struct {
 	Revenue          int                `json:"revenue"`
 	TotalOrder       int                `json:"total_order"`
 	TotalProduct     int                `json:"total_product"`
+	ListTimes        []string           `json:"list_times"`
+	ListOrders       []int              `json:"list_orders"`
+	ListProducts     []int              `json:"list_products"`
 	MapStatistiOrder map[int]Duration   `json:"map_order_statistic"`
 	TopSell          []ProductStatistic `json:"top_sell"`
 }
 
 type Duration struct {
-	Start      time.Time `json:"start"`
-	End        time.Time `json:"end"`
-	OrderCount int       `json:"order_count"`
+	Start        time.Time `json:"start"`
+	End          time.Time `json:"end"`
+	OrderCount   int       `json:"order_count"`
+	ProductCount int       `json:"product_count"`
 }
 
 func (d Duration) inTimeSpan(t time.Time) bool {
@@ -66,14 +71,19 @@ func Statistic() StatisticData {
 		db.Where("id_order = ?", order.ID).Find(&listOrderDetails)
 		order.ListOrderDetails = listOrderDetails
 
+		//create key: save index of duration
+		var keyy = 0
+
 		//update map statistic order
 		for key, value := range mapOrderStatistic {
 			if value.inTimeSpan(order.CreatedAt) {
 				mapOrderStatistic[key] = Duration{
-					Start:      value.Start,
-					End:        value.End,
-					OrderCount: value.OrderCount + 1,
+					Start:        value.Start,
+					End:          value.End,
+					OrderCount:   value.OrderCount + 1,
+					ProductCount: value.ProductCount,
 				}
+				keyy = key
 				break
 			}
 		}
@@ -82,13 +92,21 @@ func Statistic() StatisticData {
 		for _, orderDetail := range order.ListOrderDetails {
 			_, ok := mapProductNameStatistic[orderDetail.ProductName]
 			if ok {
-				mapProductNameStatistic[orderDetail.ProductName]++
+				mapProductNameStatistic[orderDetail.ProductName] += orderDetail.Quantity
 			} else {
 				mapProductNameStatistic[orderDetail.ProductName] = 1
 			}
-
 			//update totalProduct
-			totalProduct += 1
+			totalProduct += orderDetail.Quantity
+
+			//update product count
+			oldDuration := mapOrderStatistic[keyy]
+			mapOrderStatistic[keyy] = Duration{
+				Start:        oldDuration.Start,
+				End:          oldDuration.End,
+				OrderCount:   oldDuration.OrderCount,
+				ProductCount: oldDuration.ProductCount + orderDetail.Quantity,
+			}
 		}
 
 	}
@@ -96,10 +114,15 @@ func Statistic() StatisticData {
 	//convert map to slice statistic
 	SliceProductStatistic := convertToSlice(mapProductNameStatistic)
 
+	//convert data
+	listTimess, listOrderss, listProductss := convertMapOrderStatistic(mapOrderStatistic)
 	return StatisticData{
 		Revenue:          revenue,
 		TotalOrder:       len(listOrders),
 		TotalProduct:     totalProduct,
+		ListTimes:        listTimess,
+		ListOrders:       listOrderss,
+		ListProducts:     listProductss,
 		MapStatistiOrder: mapOrderStatistic,
 		TopSell:          SliceProductStatistic,
 	}
@@ -115,6 +138,28 @@ func rounding(t time.Time) time.Time {
 	return time.Date(y, time.Month(m), d, h+1, 0, 0, 0, time.Now().UTC().Local().Location())
 }
 
+func convertMapOrderStatistic(m map[int]Duration) ([]string, []int, []int) {
+	var (
+		listTimes    = make([]string, 25)
+		listOrders   = make([]int, 25)
+		listProducts = make([]int, 25)
+	)
+	for key, duration := range m {
+		listTimes[key] = getTime(duration.Start.String())
+		listOrders[key] = duration.OrderCount
+		listProducts[key] = duration.ProductCount
+	}
+	return listTimes, listOrders, listProducts
+}
+
+//"2021-07-25 20:00:00 +0700 +07 2021-07-25 21:00:00 +0700 +07 0 0" to "20:00"
+func getTime(s string) (r string) {
+	arr := strings.Split(s, " ")
+	arr2 := strings.Split(arr[1], ":")
+	r = arr2[0] + ":" + arr2[1]
+	return
+}
+
 // Tạo một map thống kê với key là số thứ tự sắp xếp theo thời gian, value là các khoảng thời gian (1 tiếng) và số
 // lượng order được tạo ra trong khoảng thời gian đó
 func createMapStatisticOrder(timenow time.Time) map[int]Duration {
@@ -125,9 +170,10 @@ func createMapStatisticOrder(timenow time.Time) map[int]Duration {
 
 	for i := 1; i <= 24; i++ {
 		m[i] = Duration{
-			Start:      timeStart,
-			End:        timeStart.Add(time.Hour * 1),
-			OrderCount: 0,
+			Start:        timeStart,
+			End:          timeStart.Add(time.Hour * 1),
+			OrderCount:   0,
+			ProductCount: 0,
 		}
 		timeStart = timeStart.Add(time.Hour * 1)
 	}
