@@ -92,4 +92,9 @@ func RunServer() {
 	if err != nil {
 		panic(err)
 	}
+
+	// err := http.ListenAndServe(":8080", router)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }

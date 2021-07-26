@@ -8,7 +8,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/olivere/elastic/v7 v7.0.26 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/rs/cors v1.8.0 // indirect
+	github.com/rs/cors v1.8.0
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.0+incompatible // indirect
 	github.com/streadway/amqp v1.0.0

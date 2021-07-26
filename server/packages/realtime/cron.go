@@ -1,4 +1,4 @@
-package scheduler
+package realtime
 
 import (
 	"fmt"
@@ -11,13 +11,13 @@ import (
 
 func SendEmailDailyReportForStoreOwner() {
 	c := cron.New(cron.WithSeconds())
-	c.AddFunc("0 0 12 * * *", createAndSendReport)
+	c.AddFunc("30 16 18 * * *", createAndSendReport)
 	c.Start()
 
 	//////chạy realtime thì bỏ đi
 	time.Sleep(time.Second * 600)
 	c.Stop()
-	/////
+	// /////
 }
 
 func createAndSendReport() {

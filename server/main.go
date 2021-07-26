@@ -1,10 +1,13 @@
-package main 
-import(
+package main
+
+import (
+	"project/packages/realtime"
 	"project/server"
-	"project/packages/scheduler"
 )
+
 func main() {
-	go scheduler.SendEmailDailyReportForStoreOwner()
+	go realtime.SendEmailDailyReportForStoreOwner()
+	go realtime.CheckNewFile()
 	server.RunServer()
-	
+
 }
